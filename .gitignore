@@ -1,0 +1,13 @@
+*.o
+*.a
+*.so
+*.d
+
+kernel.elf
+
+image.iso
+
+*.nvram
+*.qemu
+*.log
+*.pid
