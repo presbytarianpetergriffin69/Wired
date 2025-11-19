@@ -1,0 +1,19 @@
+BasedOnStyle: WebKit
+UseTab: Always
+IndentWidth:  4 
+TabWidth: 4 
+
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: true 
+  AcrossComments: true 
+
+AlignConsecutiveMacros:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true
+	
+AlignConsecutiveDeclarations:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true
