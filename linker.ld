@@ -37,4 +37,8 @@ SECTIONS
     *(COMMON)
     *(.bss .bss.*)
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 02596e8628a4d6ba4788f08fe39c2e8a113b8fe0

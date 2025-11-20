@@ -2,16 +2,22 @@
 *.a
 *.so
 *.d
+<<<<<<< HEAD
 
 kernel.elf
 
 <<<<<<< HEAD
 image.iso
 
+=======
+*.elf
+*.iso
+>>>>>>> 02596e8628a4d6ba4788f08fe39c2e8a113b8fe0
 *.nvram
 *.qemu
 *.log
 *.pid
+<<<<<<< HEAD
 =======
 *.iso
 *.img
@@ -34,3 +40,14 @@ limine-deploy.tmp
 .DS_Store
 Thumbs.db
 >>>>>>> bd6c0b3 (clean import)
+=======
+*.exe
+
+.vs/
+.vscode/
+bin/
+obj/
+IMGROOT/
+
+
+>>>>>>> 02596e8628a4d6ba4788f08fe39c2e8a113b8fe0
