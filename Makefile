@@ -104,7 +104,7 @@ iso:
         -efi-boot-part --efi-boot-image --protective-msdos-label \
         $(ISODIR) -o $(ISONAME).iso
 	@echo "Preparing image for Legacy BIOS.."
-	./limine/limine bios-install $(ISONAME).iso
+	thirdparty/limine/limine bios-install $(ISONAME).iso
 
 
 .PHONY: clean
