@@ -5,6 +5,14 @@
 
 kernel.elf
 
+<<<<<<< HEAD
+image.iso
+
+*.nvram
+*.qemu
+*.log
+*.pid
+=======
 *.iso
 *.img
 *.bin
@@ -25,3 +33,4 @@ limine-deploy.tmp
 .idea/
 .DS_Store
 Thumbs.db
+>>>>>>> bd6c0b3 (clean import)
