@@ -5,6 +5,9 @@
 #include <console.h>
 #include <font8x16.h>
 #include <system.h>
+#include <gdt.h>
+#include <tss.h>
+#include <idt.h>
 
 __attribute__((used, section(".limine_requests")))
 static volatile uint64_t limine_base_revision[] = LIMINE_BASE_REVISION(4);
@@ -39,6 +42,12 @@ void kmain(void)
     console_init(framebuffer);
 
     console_print("Welcome to the Wired\n");
+
+    gdt_init();
+    tss_init();
+    idt_init();
+
+    console_print("GDT initialized\n");
 
     panic("test panic");
 

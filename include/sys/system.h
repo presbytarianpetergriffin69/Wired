@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <stdnoreturn.h>
 #include <console.h>
+#include <memstring.h>
 
 #define KERNEL_NAME     "LAIN"
 #define KERNEL_VER      "0.13.37"

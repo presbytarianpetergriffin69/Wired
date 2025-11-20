@@ -5,9 +5,23 @@
 
 kernel.elf
 
-image.iso
+*.iso
+*.img
+*.bin
+*.qcow2
 
-*.nvram
-*.qemu
+build/
+iso_root/
+
+limine.sys
+limine-cd.bin
+limine-deploy.tmp
+
 *.log
+*.nvram
 *.pid
+
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
