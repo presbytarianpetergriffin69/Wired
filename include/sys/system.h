@@ -24,6 +24,7 @@
 #define NORETURN _Noreturn
 #define ALWAYS_INLINE inline __attribute__((always_inline))
 #define NOINLINE __attribute__((noinline))
+#define USED_SECTION(sec) __attribute__((used, section(sec)))
 
 typedef enum {
     LOG_DEBUG,
