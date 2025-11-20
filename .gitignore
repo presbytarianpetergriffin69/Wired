@@ -10,4 +10,7 @@
 *.pid
 .vs/
 .vscode/
-
+bin/
+obj/
+IMGROOT/
+limine/
