@@ -10,7 +10,7 @@ kernel.elf
 *.bin
 *.qcow2
 
-build/
+.build/
 iso_root/
 
 limine.sys
