@@ -8,9 +8,12 @@
 *.qemu
 *.log
 *.pid
+*.exe
+limine
 .vs/
 .vscode/
 bin/
 obj/
 IMGROOT/
-limine/
+
+
