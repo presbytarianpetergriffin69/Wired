@@ -64,7 +64,12 @@ void acpi_init(void)
         panic("No limine description pointer");
     }
 
+    if (!hhdm_request.response) {
+        panic("No hhdm from limine");
+    }
+
     g_hhdm = hhdm_request.response->offset;
+    kprintf("ACPI: HHDM Offset = %p\n");
 
     uint64_t rsdp_phys = (uint64_t)rsdp_request.response->address;
     g_rsdp = (struct acpi_rsdp *)(rsdp_phys + g_hhdm);
