@@ -92,12 +92,12 @@ iso:
 	@echo "Copying ELF to Boot directory.."
 	cp -v bin/wiredos $(ISODIR)/boot/
 	mkdir -p $(ISODIR)/boot/limine
-	cp -v limine.conf limine/limine-bios.sys limine/limine-bios-cd.bin \
-      limine/limine-uefi-cd.bin $(ISODIR)/boot/limine/
+	cp -v limine.conf thirdparty/limine/limine-bios.sys thirdparty/limine/limine-bios-cd.bin \
+      thirdparty/limine/limine-uefi-cd.bin $(ISODIR)/boot/limine/
 	@echo "Creating EFI Boot Tree.."
 	mkdir -p $(ISODIR)/EFI/BOOT
-	cp -v limine/BOOTX64.EFI $(ISODIR)/EFI/BOOT/
-	cp -v limine/BOOTIA32.EFI $(ISODIR)/EFI/BOOT/
+	cp -v thirdparty/limine/BOOTX64.EFI $(ISODIR)/EFI/BOOT/
+	cp -v thirdparty/limine/BOOTIA32.EFI $(ISODIR)/EFI/BOOT/
 	xorriso -as mkisofs -R -r -J -b boot/limine/limine-bios-cd.bin \
         -no-emul-boot -boot-load-size 4 -boot-info-table -hfsplus \
         -apm-block-size 2048 --efi-boot boot/limine/limine-uefi-cd.bin \
