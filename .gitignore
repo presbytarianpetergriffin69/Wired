@@ -9,7 +9,7 @@
 *.log
 *.pid
 *.exe
-limine
+
 .vs/
 .vscode/
 bin/
