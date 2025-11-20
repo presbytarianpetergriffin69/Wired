@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <system.h>
 
-struct acpi_rdsp
+struct acpi_rsdp
 {
     char signature[4];
     uint8_t checksum;
@@ -80,6 +80,6 @@ struct madt_irq_override
     uint16_t flags;
 } PACKED;
 
-void acpi_init(void *rsdp_virt);
+void acpi_init(void);
 void acpi_parse_madt(struct acpi_madt *madt);
 void acpi_parse_fadt(void *fadt);

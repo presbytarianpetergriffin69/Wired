@@ -39,6 +39,7 @@ OBJ +=	obj/$(KERNDIR)/boot.o \
 	obj/$(DRIVDIR)/console.o \
 	obj/$(DRIVDIR)/font8x16.o \
 	obj/$(AMDCDIR)/cpu.o \
+	obj/$(AMDCDIR)/acpi.o \
 	obj/$(AMDCDIR)/gdt.o \
 	obj/$(AMDCDIR)/idt.o \
 	obj/$(AMDCDIR)/system.o \
