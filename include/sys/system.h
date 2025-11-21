@@ -37,7 +37,7 @@ typedef enum {
 void kputc(char c);
 void kprint(const char *s);
 void kprintf(const char *fmt, ...);
-void klog(log_level_t level, const char *fmt, ...);
+void klog(const char *s);
 
 NORETURN void panic(const char *msg);
 NORETURN void halt(void);

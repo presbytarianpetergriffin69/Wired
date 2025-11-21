@@ -48,6 +48,8 @@ void kmain(void)
 
     serial_puts("test\n");
 
+    acpi_init();
+
     panic("If you get here everything works :-)");
 
     halt();

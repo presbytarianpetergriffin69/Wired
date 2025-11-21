@@ -1,6 +1,7 @@
-#include "system.h"
-#include "console.h"
+#include <system.h>
+#include <console.h>
 #include <stdarg.h>
+#include <serial.h>
 
 void kputc(char c)
 {
@@ -55,28 +56,8 @@ void kprintf(const char *fmt, ...)
     va_end(args);
 }
 
-static const char *log_labels[] = 
-{
-    "[DEBUG] ",
-    "[INFO]  ",
-    "[WARN]  ",
-    "[ERROR] ",
-    "[FATAL] "
-};
-
-void klog(log_level_t level, const char *fmt, ...) 
-{
-    kprint(log_labels[level]);
-
-    va_list args;
-    va_start(args, fmt);
-    kprintf(fmt, args); // same format rules
-    va_end(args);
-
-    kputc('\n');
-
-    if (level == LOG_FATAL)
-        panic("fatal error reached");
+void klog(const char *s) {
+    serial_puts(s);
 }
 
 NORETURN void halt(void) 
