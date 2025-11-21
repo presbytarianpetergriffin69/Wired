@@ -38,6 +38,7 @@ CFLAGS  += \
 OBJ +=	obj/$(KERNDIR)/boot.o \
 	obj/$(DRIVDIR)/console.o \
 	obj/$(DRIVDIR)/font8x16.o \
+	obj/$(DRIVDIR)/serial.o \
 	obj/$(AMDCDIR)/cpu.o \
 	obj/$(AMDCDIR)/acpi.o \
 	obj/$(AMDCDIR)/gdt.o \
