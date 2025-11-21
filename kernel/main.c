@@ -30,6 +30,8 @@ void kmain(void)
 
     struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];
 
+    serial_init();
+
     console_init(framebuffer);
 
     console_print("Welcome to the Wired\n");
@@ -40,7 +42,9 @@ void kmain(void)
 
     console_print("GDT initialized\n");
 
-    acpi_init();
+    console_print("acpi initialized\n");
+
+    serial_puts("test\n");
 
     panic("If you get here everything works :-)");
 
