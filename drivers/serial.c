@@ -8,7 +8,7 @@ static bool initialized = false;
 
 #define KERNEL_COM_TTY 0x3F8
 
-int serial_init(uint16_t base)
+void serial_init(void)
 {
     uint16_t base = KERNEL_COM_TTY;
 

@@ -6,6 +6,8 @@
 #include <font8x16.h>
 #include <system.h>
 #include <gdt.h>
+#include <serial.h>
+#include <io.h>
 #include <tss.h>
 #include <idt.h>
 #include <acpi.h>
