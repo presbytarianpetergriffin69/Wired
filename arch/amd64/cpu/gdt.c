@@ -62,6 +62,8 @@ static void gdt_set_entry(int idx, uint32_t base, uint32_t limit, uint8_t access
 
 void gdt_init(void)
 {
+    kprintf("[GDT] Setting various entries\n");
+
     // NULL DESCRIPTOR
     gdt_set_entry(0, 0, 0, 0, 0);
 
@@ -93,6 +95,8 @@ void gdt_init(void)
 
     gdtr.base = (uint64_t)&gdt_table;
     gdtr.limit = sizeof(gdt_table) - 1;
+
+    kprintf("[GDT] Loading GDT\n");
 
     gdt_load(&gdtr);
 

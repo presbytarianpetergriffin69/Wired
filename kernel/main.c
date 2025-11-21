@@ -18,10 +18,6 @@ static volatile struct limine_framebuffer_request framebuffer_request = {
     .revision = 0
 };
 
-extern volatile struct limine_rsdp_request rsdp_request;
-extern volatile struct limine_hhdm_request hhdm_request;
-extern volatile struct limine_memmap_request memmap_request;
-
 void kmain(void)
 {
 
@@ -44,11 +40,11 @@ void kmain(void)
 
     console_print("GDT initialized\n");
 
-    console_print("acpi initialized\n");
-
     serial_puts("test\n");
 
     acpi_init();
+
+    console_print("acpi initialized\n");
 
     panic("If you get here everything works :-)");
 

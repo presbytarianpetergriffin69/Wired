@@ -54,51 +54,30 @@ static struct acpi_sdt_header *phys_to_sdt(uint64_t phys)
     return (struct acpi_sdt_header *)(phys + g_hhdm);
 }
 
+uint64_t acpi_hhdm_offset = 0;
+
 void acpi_init(void)
 {
     if (!LIMINE_BASE_REVISION_SUPPORTED(limine_base_revision)) {
-        panic("Limine base revision too old");
+        panic("limine base revision too old");
     }
 
     if (!rsdp_request.response || !rsdp_request.response->address) {
-        panic("No limine description pointer");
+        panic("mo limine description pointer");
     }
 
     if (!hhdm_request.response) {
-        panic("No hhdm from limine");
+        panic("mo hhdm from limine");
     }
 
     g_hhdm = hhdm_request.response->offset;
-    kprintf("ACPI: HHDM Offset = %p\n");
+    kprintf("[ACPI] HHDM Offset = %p\n");
 
     uint64_t rsdp_phys = (uint64_t)rsdp_request.response->address;
-    g_rsdp = (struct acpi_rsdp *)(rsdp_phys + g_hhdm);
+    struct acpi_rsdp *rsdp =
+        (struct acpi_rsdp *)(rsdp_phys + acpi_hhdm_offset);
 
-    if (memcmp(g_rsdp->signature, "RSD PTR ", 8) != 0) {
-        panic("ACPI RSDP: bad signature");
-    }
-
-    if (!acpi_checksum(g_rsdp, 20)) {
-        panic("ACPI RSDP: bad v1 checksum");
-    }
-
-    if (g_rsdp->revision >= 2 && g_rsdp->length >= sizeof(*g_rsdp)) {
-        if (!acpi_checksum(g_rsdp, g_rsdp->length)) {
-            panic("ACPI RSDP: bad v2+ checksum");
-        }
-    }
-
-    if (g_rsdp->revision >= 2 && g_rsdp->xsdt_address != 0) {
-        g_xsdt = phys_to_sdt(g_rsdp->xsdt_address);
-        if (!acpi_checksum(g_xsdt, g_xsdt->length)) {
-            panic("ACPI: XSDT checksum failed");
-        }
-    } else {
-        g_rsdt = phys_to_sdt(g_rsdp->rsdt_address);
-        if (!acpi_checksum(g_rsdt, g_rsdt->length)) {
-            panic("ACPI: RSDT checksum failed");
-        }
-    }
+    kprintf("[ACPI] Proceeding with what we have\n");
 }
 
 struct acpi_sdt_header *acpi_find_table(const char sig[4])
