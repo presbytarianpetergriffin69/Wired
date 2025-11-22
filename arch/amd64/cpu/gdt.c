@@ -101,4 +101,6 @@ void gdt_init(void)
     gdt_load(&gdtr);
 
     tss_load(0x28);
+
+    console_print("GDT initialized\n");
 }

@@ -38,13 +38,9 @@ void kmain(void)
     tss_init();
     idt_init();
 
-    console_print("GDT initialized\n");
-
     serial_puts("test\n");
 
     acpi_init();
-
-    console_print("acpi initialized\n");
 
     panic("If you get here everything works :-)");
 
