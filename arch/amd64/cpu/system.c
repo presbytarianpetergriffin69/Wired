@@ -78,7 +78,7 @@ void kprintf(const char *fmt, ...)
             continue;
         }
 
-        p++/
+        p++;
 
         int zero_pad = 0;
         int width    = 0;
@@ -161,7 +161,7 @@ void kprintf(const char *fmt, ...)
             break;
 
         default:
-            // Unknown specifier: print literally
+            // unknown specifier: print literally
             console_putc('%');
             console_putc(*p);
             break;
