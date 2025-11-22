@@ -208,6 +208,5 @@ NORETURN void panic(const char *msg)
 
     dump_regs();
 
-    kprint("\nSystem execution halted\n");
-    halt();
+    kprint("\nSystem execution halted. System will reboot upon user input\n");
 }

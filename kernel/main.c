@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+
 #include <limine.h>
 #include <console.h>
 #include <font8x16.h>
@@ -20,29 +21,36 @@ static volatile struct limine_framebuffer_request framebuffer_request = {
 
 void kmain(void)
 {
-
     if (framebuffer_request.response == NULL
      || framebuffer_request.response->framebuffer_count < 1) {
-        halt();
+        panic("No framebuffer from Limine");
     }
 
-    struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];
+    struct limine_framebuffer *fb =
+        framebuffer_request.response->framebuffers[0];
+
+    uint32_t width  = fb->width;
+    uint32_t height = fb->height;
 
     serial_init();
 
-    console_init(framebuffer);
+    console_init(fb);
 
-    console_print("Welcome to the Wired\n");
+    console_print("Welcome to Wired OS\n");
 
     gdt_init();
     tss_init();
     idt_init();
 
-    serial_puts("test\n");
+    serial_puts("serial test\n");
 
     acpi_init();
 
+    starfield_init();
+
     panic("If you get here everything works :-)");
 
-    halt();
+    for (;;) {
+        starfield_twinkle();
+    }
 }

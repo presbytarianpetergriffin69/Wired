@@ -7,9 +7,12 @@
 
 XSDP_t *g_xsdp = NULL;
 uint64_t acpi_hhdm_offset = 0;
+
 ACPISDTHeader *g_xsdt = NULL;
 ACPISDTHeader *g_rsdt = NULL;
-uint64_t root_phys = 0;
+
+static ACPISDTHeader *g_root_sdt = NULL;
+static int g_acpi_is_xsdt = 0;
 
 USED_SECTION(".limine_requests")
 static volatile uint64_t limine_base_revision[] =
@@ -51,8 +54,39 @@ static inline void *phys_to_virt(uint64_t phys)
     return (void *)(phys + acpi_hhdm_offset);
 }
 
-static ACPISDTHeader *g_root_sdt = NULL;
-static int g_acpi_is_xsdt = 0;
+void acpi_enum_tables(void)
+{
+    if (!g_root_sdt)
+        panic("[ACPI] Root SDT Missing\n");
+    
+    uint32_t entries = 0;
+
+    if (g_acpi_is_xsdt) {
+        entries = (g_root_sdt->Length - sizeof(ACPISDTHeader)) / 8;
+    } else {
+        entries = (g_root_sdt->Length - sizeof(ACPISDTHeader)) / 4;
+    }
+
+    kprintf("[ACPI] Root SDT Contains %u entries\n", entries);
+
+    uint8_t *entry_ptr = (uint8_t *)(g_root_sdt + 1);
+
+    for (uint32_t i = 0; i < entries; i++) {
+        uint64_t phys = g_acpi_is_xsdt
+            ? *(uint64_t *)(entry_ptr + i * 8)
+            : *(uint32_t *)(entry_ptr + i * 4);
+
+        ACPISDTHeader *hdr = (ACPISDTHeader *)phys_to_virt(phys);
+
+    kprintf("[ACPI] Found Table: %c%c%c%c at %p len=%u\n",
+            hdr->Signature[0],
+            hdr->Signature[1],
+            hdr->Signature[2],
+            hdr->Signature[3],
+            hdr,
+            hdr->Length);
+    }
+}
 
 void acpi_init(void)
 {
@@ -69,19 +103,12 @@ void acpi_init(void)
     } else {
         acpi_hhdm_offset = 0;
         kprintf("[ACPI] No HHDM Response\n");
-    }
-    
-    g_xsdp = (XSDP_t *)rsdp_request.response->address;   // already virtual
-    uint64_t xsdp_phys = (uint64_t)g_xsdp - acpi_hhdm_offset;
+    }   
+
+    g_xsdp = (XSDP_t *)rsdp_request.response->address;
 
     kprintf("[ACPI] hhdm_request.response = %p\n", hhdm_request.response);
-    if (hhdm_request.response)
-        kprintf("[ACPI] HHDM offset = 0x%016lx\n", (unsigned long)hhdm_request.response->offset);
-    else
-        kprintf("[ACPI] HHDM offset not provided\n");
-
-    kprintf("[ACPI] XSDP phys=0x%016lx virt=%p\n",
-            xsdp_phys, g_xsdp);
+    kprintf("[ACPI] HHDM offset = 0x%016lx\n", (unsigned long)acpi_hhdm_offset);
 
     if (memcmp(g_xsdp->Signature, "RSD PTR ", 8) != 0) {
         panic("[ACPI] bad signature\n");
@@ -97,34 +124,36 @@ void acpi_init(void)
         }
     }
 
-    kprintf("[ACPI] OEMID=%.6s Rev=%u XSDT=%p\n",
+    kprintf("[ACPI] OEMID=%p Rev=%u XSDT=%p\n",
             g_xsdp->OEMID,
             g_xsdp->Revision,
             (unsigned long)g_xsdp->XsdtAddress);
 
     kprintf("[ACPI] XSDP loaded\n");
 
-    ACPISDTHeader *root = NULL;
-
     if (g_xsdp->Revision >= 2 && g_xsdp->XsdtAddress != 0) {
-        g_xsdt = (ACPISDTHeader *)phys_to_virt(g_xsdp->XsdtAddress);
-        root = g_xsdt;
-        kprintf("[ACPI] Using XSDT at %p\n", g_xsdt);
+        g_acpi_is_xsdt = 1;
+        g_root_sdt = (ACPISDTHeader *)phys_to_virt(g_xsdp->XsdtAddress);
+        kprintf("[ACPI] Using XSDT at %p\n", g_root_sdt);
     } else if (g_xsdp->RsdtAddress != 0) {
-        g_rsdt = (ACPISDTHeader *)phys_to_virt(g_xsdp->RsdtAddress);
-        root = g_rsdt;
-        kprintf("[ACPI] Using RSDT at %p\n", g_rsdt);
+        g_acpi_is_xsdt = 0;
+        g_root_sdt = (ACPISDTHeader *)phys_to_virt(g_xsdp->RsdtAddress);
+        kprintf("[ACPI] Using RSDT at %p\n", g_root_sdt);
     } else {
-        panic("[ACPI] No XSDT/RSDT Pointer available\n");
+        panic("[ACPI] No XSDT/RSDT pointer available\n");
     }
 
-    if (!acpi_checksum(root, root->Length))
+    kprintf("[ACPI] Root SDT %c%c%c%c len=%u\n",
+            g_root_sdt->Signature[0],
+            g_root_sdt->Signature[1],
+            g_root_sdt->Signature[2],
+            g_root_sdt->Signature[3],
+            g_root_sdt->Length);
+
+    if (!acpi_checksum(g_root_sdt, g_root_sdt->Length))
         panic("[ACPI] Root SDT Checksum failed\n");
 
-    g_root_sdt = (ACPISDTHeader *)phys_to_virt(root_phys);
-
-    kprintf("[ACPI] Root SDT %.4s len=%u\n",
-            g_root_sdt->Signature, root->Length);
+    acpi_enum_tables();
 
     kprintf("acpi initialized\n");
-} 
+}
