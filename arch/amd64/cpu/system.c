@@ -2,6 +2,7 @@
 #include <console.h>
 #include <stdarg.h>
 #include <serial.h>
+#include <crashsound.h>
 
 void kputc(char c)
 {
@@ -202,11 +203,13 @@ static void dump_regs(void) {
 
 NORETURN void panic(const char *msg) 
 {
-    kprint("!!! STOP ERROR !!!\n");
+    kprint("!!! GURU MEDITATION !!!\n");
     kprint(msg);
     kprint("\n");
 
     dump_regs();
 
     kprint("\nSystem execution halted. System will reboot upon user input\n");
+
+    crashsound();
 }
