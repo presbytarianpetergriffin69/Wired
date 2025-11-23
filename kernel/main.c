@@ -19,6 +19,13 @@ static volatile struct limine_framebuffer_request framebuffer_request = {
     .revision = 0
 };
 
+__attribute__((used, section(".limine_requests")))
+static volatile struct limine_module_request module_request = {
+    .id = LIMINE_MODULE_REQUEST_ID,
+    .revision = 0
+};
+
+
 void kmain(void)
 {
     if (framebuffer_request.response == NULL
@@ -48,9 +55,7 @@ void kmain(void)
 
     starfield_init();
 
-    panic("If you get here everything works :-)");
+    __asm__ volatile ("ud2");
 
-    for (;;) {
-        starfield_twinkle();
-    }
+    for (;;);
 }

@@ -6,16 +6,6 @@
 
 struct tss64 g_tss;
 
-void tss_init(void) 
-{
-    for (size_t i = 0; i < sizeof(g_tss); i++)
-    {
-        ((uint8_t *)&g_tss)[i] = 0;
-    }
-
-    g_tss.iomap_base = sizeof(struct tss64);
-}
-
 void tss_set_rsp0(uint64_t rsp) 
 {
     g_tss.rsp0 = rsp;

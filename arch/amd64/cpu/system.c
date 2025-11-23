@@ -203,13 +203,17 @@ static void dump_regs(void) {
 
 NORETURN void panic(const char *msg) 
 {
-    kprint("!!! GURU MEDITATION !!!\n");
+
+    kprintf("!!! GURU MEDITATION !!!\n");
     kprint(msg);
     kprint("\n");
 
     dump_regs();
 
-    kprint("\nSystem execution halted. System will reboot upon user input\n");
+    kprintf("\nSystem execution halted. System will reboot upon user input\n");
 
     crashsound();
+    speaker_off();
+
+    halt();
 }

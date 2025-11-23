@@ -4,6 +4,8 @@
 #include <gdt.h>
 #include <tss.h>
 
+extern struct tss64 g_tss;
+
 struct gdt_entry
 {
     uint16_t limit_low;
@@ -45,8 +47,10 @@ struct gdt_table
 static struct gdt_table gdt_table;
 static struct gdt_descriptor gdtr;
 
+static uint8_t ist1_stack[4096] ALIGNED(16);
+static uint8_t kernel_stack[8192] ALIGNED(16);
+
 extern void gdt_load(struct gdt_descriptor *gdtr);
-extern void tss_load(uint16_t selector);
 
 static void gdt_set_entry(int idx, uint32_t base, uint32_t limit, uint8_t access, uint8_t flags)
 {
@@ -58,6 +62,19 @@ static void gdt_set_entry(int idx, uint32_t base, uint32_t limit, uint8_t access
     e->access = access;
     e->granularity = (uint8_t)(((limit >> 16) & 0x0F) | (flags & 0xF0));
     e->base_high = (uint8_t)((base >> 24) & 0xFF);
+}
+
+void tss_init(void)
+{
+    memset(&g_tss, 0, sizeof(g_tss));
+
+    static uint8_t ist1_stack[4096] ALIGNED(16);
+    static uint8_t kernel_stack[8192] ALIGNED(16);
+
+    g_tss.rsp0 = (uint64_t)(kernel_stack + sizeof(kernel_stack));
+    g_tss.ist1 = (uint64_t)(ist1_stack + sizeof(ist1_stack));
+
+    g_tss.iomap_base = sizeof(struct tss64);
 }
 
 void gdt_init(void)
@@ -97,6 +114,8 @@ void gdt_init(void)
     gdtr.limit = sizeof(gdt_table) - 1;
 
     kprintf("[GDT] Loading GDT\n");
+
+    tss_init();
 
     gdt_load(&gdtr);
 
