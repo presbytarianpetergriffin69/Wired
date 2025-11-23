@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#define CONSOLE_FG 0xFFFFFFFF
+#define CONSOLE_BG 0x00CC0000
+
 // Framebuffer state
 static struct limine_framebuffer *fb;
 static uint32_t *fb_ptr;
@@ -83,22 +86,36 @@ void console_putc(char c)
 {
     if (c == '\n') {
         cursor_x = 0;
-        cursor_y++;
-        goto check_scroll;
+        cursor_y += FONT_H;
+        return;
     }
 
-    draw_char(c, cursor_x * FONT_W, cursor_y * FONT_H, 0xffffff, 0x000000);
+    uint8_t *glyph = font8x16[(uint8_t)c];
 
-    cursor_x++;
-    if (cursor_x * FONT_W >= fb_width) {
+    for (int y = 0; y < FONT_H; y++) {
+        uint8_t row = glyph[y];
+
+        for (int x = 0; x < FONT_W; x++) {
+            size_t fx = cursor_x + x;
+            size_t fy = cursor_y + y;
+
+            if (fx >= fb_width || fy >= fb_height)
+                continue;
+
+            // ALWAYS paint background blue
+            fb_ptr[fy * (fb_pitch / 4) + fx] = CONSOLE_BG;
+
+            // Draw glyph in white
+            if (row & (1 << (7 - x))) {
+                fb_ptr[fy * (fb_pitch / 4) + fx] = CONSOLE_FG;
+            }
+        }
+    }
+
+    cursor_x += FONT_W;
+    if (cursor_x + FONT_W >= fb_width) {
         cursor_x = 0;
-        cursor_y++;
-    }
-
-check_scroll:
-    if ((cursor_y + 1) * FONT_H >= fb_height) {
-        scroll();
-        cursor_y--;
+        cursor_y += FONT_H;
     }
 }
 
@@ -150,34 +167,6 @@ void starfield_init(void)
         // Only place stars on black background
         if (getpixel(stars[i].x, stars[i].y) == 0x000000) {
             putpixel(stars[i].x, stars[i].y, STAR_DIM);
-        }
-    }
-}
-
-// Periodically twinkle already-drawn stars
-void starfield_twinkle(void)
-{
-    for (int i = 0; i < MAX_STARS; i++) {
-        star_t *s = &stars[i];
-
-        // Only sometimes twinkle this star
-        if ((rand32() & 0x3F) != 0) { // 1/64 chance
-            continue;
-        }
-
-        // If text/graphics overwrote this pixel, skip it
-        uint32_t px = getpixel(s->x, s->y);
-        if (px != STAR_DIM && px != STAR_BRIGHT && px != 0x000000) {
-            continue;
-        }
-
-        // Flip between dim/bright/off
-        if (px == STAR_DIM) {
-            putpixel(s->x, s->y, STAR_BRIGHT);
-        } else if (px == STAR_BRIGHT) {
-            putpixel(s->x, s->y, STAR_DIM);
-        } else { // was black
-            putpixel(s->x, s->y, STAR_DIM);
         }
     }
 }

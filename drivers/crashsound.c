@@ -40,7 +40,9 @@ void crashsound(void)
         F4_HZ  = 347,  // 346.68
         C5_HZ  = 700,  // 700
         A4_HZ  = 437,  // 436.68
-        Bb4_HZ = 520   // 520.35
+        Bb4_HZ = 520,  // 520.35
+        B4_HZ  = 460,
+        D4_HZ  = 355
     };
 
     struct {
@@ -51,12 +53,17 @@ void crashsound(void)
         { A4_HZ,  600 },
         { Bb4_HZ, 600 }, 
         { C5_HZ,  900 }, 
+
+        { A4_HZ, 600 },
+        { B4_HZ,  600 },
+        { A4_HZ,  600 },
+        { D4_HZ,  900 },
     };
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 8; i++) {
         beep(notes[i].freq);
         delay_loop(notes[i].dur_ms);
         speaker_off();
-        delay_loop(40);   // little authentic gap between notes
+        delay_loop(40);   // gap between notes
     }
 }
