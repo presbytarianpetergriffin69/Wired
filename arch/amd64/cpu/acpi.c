@@ -4,6 +4,7 @@
 #include <limine.h>
 #include <system.h>
 #include <acpi.h>
+#include <hpet.h>
 
 XSDP_t *g_xsdp = NULL;
 uint64_t acpi_hhdm_offset = 0;
@@ -155,5 +156,79 @@ void acpi_init(void)
 
     acpi_enum_tables();
 
+    hpet_init();
+
     kprintf("acpi initialized\n");
+}
+
+ACPISDTHeader *acpi_find_table(const char sig[4])
+{
+    // 1) Try XSDT (64-bit entries)
+    if (g_xsdt) {
+        uint8_t *xsdt_bytes = (uint8_t *)g_xsdt;
+        uint32_t length     = g_xsdt->Length;
+
+        // entries start immediately after the header
+        uintptr_t entries_addr = (uintptr_t)(xsdt_bytes + sizeof(ACPISDTHeader));
+        size_t entry_count = (length - sizeof(ACPISDTHeader)) / 8; // 8 bytes per entry
+
+        uint64_t *entries = (uint64_t *)entries_addr;
+
+        for (size_t i = 0; i < entry_count; ++i) {
+            uint64_t phys = entries[i];
+            if (!phys)
+                continue;
+
+            ACPISDTHeader *hdr = (ACPISDTHeader *)ACPI_PHYS_TO_VIRT(phys);
+
+            // Compare 4-byte signature manually (no libc needed)
+            if (hdr->Signature[0] == sig[0] &&
+                hdr->Signature[1] == sig[1] &&
+                hdr->Signature[2] == sig[2] &&
+                hdr->Signature[3] == sig[3]) {
+
+                // Optional checksum check
+                if (!acpi_checksum(hdr, hdr->Length)) {
+                    kprintf("ACPI: table %.4s failed checksum\n", sig);
+                    continue;
+                }
+
+                return hdr;
+            }
+        }
+    }
+
+    // 2) Try RSDT (32-bit entries)
+    if (g_rsdt) {
+        uint8_t *rsdt_bytes = (uint8_t *)g_rsdt;
+        uint32_t length     = g_rsdt->Length;
+
+        uintptr_t entries_addr = (uintptr_t)(rsdt_bytes + sizeof(ACPISDTHeader));
+        size_t entry_count = (length - sizeof(ACPISDTHeader)) / 4; // 4 bytes per entry
+
+        uint32_t *entries = (uint32_t *)entries_addr;
+
+        for (size_t i = 0; i < entry_count; ++i) {
+            uint32_t phys = entries[i];
+            if (!phys)
+                continue;
+
+            ACPISDTHeader *hdr = (ACPISDTHeader *)ACPI_PHYS_TO_VIRT(phys);
+
+            if (hdr->Signature[0] == sig[0] &&
+                hdr->Signature[1] == sig[1] &&
+                hdr->Signature[2] == sig[2] &&
+                hdr->Signature[3] == sig[3]) {
+
+                if (!acpi_checksum(hdr, hdr->Length)) {
+                    kprintf("ACPI: table %.4s failed checksum (RSDT)\n", sig);
+                    continue;
+                }
+
+                return hdr;
+            }
+        }
+    }
+
+    return NULL;
 }

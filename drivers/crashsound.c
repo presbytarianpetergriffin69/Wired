@@ -26,7 +26,7 @@ void speaker_off()
 
 void delay_loop(uint32_t ms) 
 {
-    const uint32_t DELAY_FACTOR = 1000000;
+    const uint32_t DELAY_FACTOR = 350000;
 
     for (uint32_t i = 0; i < ms * DELAY_FACTOR; i++) {
         __asm__ volatile ("" ::: "memory");
@@ -52,12 +52,12 @@ void crashsound(void)
         { F4_HZ,  600 },
         { A4_HZ,  600 },
         { Bb4_HZ, 600 }, 
-        { C5_HZ,  900 }, 
+        { C5_HZ,  1500 }, 
 
         { A4_HZ, 600 },
         { B4_HZ,  600 },
         { A4_HZ,  600 },
-        { D4_HZ,  900 },
+        { D4_HZ,  1500 },
     };
 
     for (int i = 0; i < 8; i++) {
