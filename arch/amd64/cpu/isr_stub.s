@@ -19,13 +19,6 @@ isr%1:
     jmp isr_common
 %endmacro
 
-isr_stub_table:
-%assign i 0
-%rep 32
-    dq isr%+i
-%assign i i+i
-%endrep
-
 ISR_NOERR 0
 ISR_NOERR 1
 ISR_NOERR 2
@@ -58,6 +51,14 @@ ISR_NOERR 28
 ISR_NOERR 29
 ISR_ERR   30
 ISR_NOERR 31
+
+align 8
+isr_stub_table:
+%assign i 0
+%rep 32
+    dq isr %+ i
+%assign i i+1
+%endrep
 
 isr_common:
     cli

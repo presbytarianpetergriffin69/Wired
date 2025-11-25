@@ -109,8 +109,11 @@ void kprintf(const char *fmt, ...)
         case 's': {
             const char *s = va_arg(args, const char *);
             if (!s) s = "(null)";
-            while (*s)
-                console_putc(*s++);
+            
+            while (*s != '\0') {
+                console_putc(*s);
+                s++;
+            }
             break;
         }
         case 'd':
@@ -171,6 +174,7 @@ void kprintf(const char *fmt, ...)
 
     va_end(args);
 }
+
 void klog(const char *s) {
     serial_puts(s);
 }
@@ -207,6 +211,8 @@ NORETURN void panic(const char *msg)
     kprintf("!!! GURU MEDITATION !!!\n");
     kprint(msg);
     kprint("\n");
+
+    kprintf("Sorry, a system error occurred\n");
 
     dump_regs();
 

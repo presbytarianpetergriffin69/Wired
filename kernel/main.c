@@ -25,7 +25,6 @@ static volatile struct limine_module_request module_request = {
     .revision = 0
 };
 
-
 void kmain(void)
 {
     if (framebuffer_request.response == NULL
@@ -50,12 +49,12 @@ void kmain(void)
     idt_init();
 
     serial_puts("serial test\n");
-
+    
     acpi_init();
 
     starfield_init();
 
-    __asm__ volatile ("ud2");
+    __asm__ volatile ("int3");
 
     for (;;);
 }
