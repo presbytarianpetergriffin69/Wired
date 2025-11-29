@@ -42,7 +42,6 @@ OBJ +=	obj/$(KERNDIR)/boot.o \
 	obj/$(DRIVDIR)/crashsound.o \
 	obj/$(AMDCDIR)/isr.o \
 	obj/$(AMDCDIR)/spinlock.o \
-	obj/$(AMDCDIR)/hpet.o \
 	obj/$(AMDCDIR)/isr_stub.o \
 	obj/$(AMDCDIR)/cpu.o \
 	obj/$(AMDCDIR)/acpi.o \
