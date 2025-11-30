@@ -7,11 +7,12 @@
 void kputc(char c)
 {
     console_putc(c);
+    serial_putc(c);
 }
 
 void kprint(const char *s) 
 {
-    while (*s) console_putc(*s++);
+    while (*s) kputc(*s++);
 }
 
 static void kprint_hex64(uint64_t v, int width, int uppercase)
@@ -30,7 +31,7 @@ static void kprint_hex64(uint64_t v, int width, int uppercase)
         buf[i++] = '0';
 
     while (i--)
-        console_putc(buf[i]);
+        kputc(buf[i]);
 }
 
 static void kprint_dec_signed(long long v)
@@ -52,7 +53,7 @@ static void kprint_dec_signed(long long v)
     if (neg)
         buf[i++] = '-';
 
-    while (i--) console_putc(buf[i]);
+    while (i--) kputc(buf[i]);
 }
 
 static void kprint_dec_unsigned(unsigned long long v)
@@ -65,7 +66,7 @@ static void kprint_dec_unsigned(unsigned long long v)
         v /= 10;
     } while (v && i < (int)sizeof(buf));
 
-    while (i--) console_putc(buf[i]);
+    while (i--) kputc(buf[i]);
 }
 
 void kprintf(const char *fmt, ...)
@@ -75,7 +76,7 @@ void kprintf(const char *fmt, ...)
 
     for (const char *p = fmt; *p; p++) {
         if (*p != '%') {
-            console_putc(*p);
+            kputc(*p);
             continue;
         }
 
@@ -103,7 +104,7 @@ void kprintf(const char *fmt, ...)
         switch (*p) {
         case 'c': {
             int c = va_arg(args, int);
-            console_putc((char)c);
+            kputc((char)c);
             break;
         }
         case 's': {
@@ -111,7 +112,7 @@ void kprintf(const char *fmt, ...)
             if (!s) s = "(null)";
             
             while (*s != '\0') {
-                console_putc(*s);
+                kputc(*s);
                 s++;
             }
             break;
@@ -161,13 +162,13 @@ void kprintf(const char *fmt, ...)
             break;
         }
         case '%':
-            console_putc('%');
+            kputc('%');
             break;
 
         default:
             // unknown specifier: print literally
-            console_putc('%');
-            console_putc(*p);
+            kputc('%');
+            kputc(*p);
             break;
         }
     }
@@ -176,7 +177,7 @@ void kprintf(const char *fmt, ...)
 }
 
 void klog(const char *s) {
-    serial_puts(s);
+    kputc(*~cs);
 }
 
 NORETURN void halt(void) 

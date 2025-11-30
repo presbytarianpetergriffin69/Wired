@@ -21,6 +21,18 @@ static size_t cursor_y = 0;
 #define FONT_W 8
 #define FONT_H 16
 
+typedef struct {
+    uint16_t x;
+    uint16_t y;
+    uint8_t  state;   // 0 = off, 1 = dim, 2 = bright
+} star_t;
+
+#define MAX_STARS   600
+#define STAR_DIM    0x808080
+#define STAR_BRIGHT 0xFFFFFF
+
+static star_t stars[MAX_STARS];
+
 static inline void putpixel(uint32_t x, uint32_t y, uint32_t color)
 {
     if (x >= fb_width || y >= fb_height) return;
@@ -58,6 +70,17 @@ static void scroll(void)
     for (size_t y = fb_height - FONT_H; y < fb_height; y++)
         for (size_t x = 0; x < fb_width; x++)
             putpixel(x, y, 0x000000);
+
+    for (int i = 0; i < MAX_STARS; i++) {
+        if (stars[i].y >= FONT_H)
+            stars[i].y -= FONT_H;
+        else
+            stars[i].y = fb_height - (FONT_H - stars[i].y);
+    }
+    
+    for (int i = 0; i < MAX_STARS; i++) {
+        putpixel(stars[i].x, stars[i].y, STAR_DIM);
+    }
 }
 
 void console_init(struct limine_framebuffer *framebuffer)
@@ -109,7 +132,7 @@ void console_putc(char c)
             if (fx >= fb_width || fy >= fb_height)
                 continue;
 
-            // ALWAYS paint background blue
+            // ALWAYS paint background red
             fb_ptr[fy * (fb_pitch / 4) + fx] = CONSOLE_BG;
 
             // Draw glyph in white
@@ -150,18 +173,6 @@ void console_fill(uint32_t color)
     cursor_x = cursor_y = 0;
 }
 
-typedef struct {
-    uint16_t x;
-    uint16_t y;
-    uint8_t  state;   // 0 = off, 1 = dim, 2 = bright
-} star_t;
-
-#define MAX_STARS   600
-#define STAR_DIM    0x808080
-#define STAR_BRIGHT 0xFFFFFF
-
-static star_t stars[MAX_STARS];
-
 static uint32_t rnd_state = 0x12345678;
 static uint32_t rand32(void)
 {
@@ -177,9 +188,6 @@ void starfield_init(void)
         stars[i].y = rand32() % fb_height;
         stars[i].state = 1; // start dim
 
-        // Only place stars on black background
-        if (getpixel(stars[i].x, stars[i].y) == 0x000000) {
-            putpixel(stars[i].x, stars[i].y, STAR_DIM);
+        putpixel(stars[i].x, stars[i].y, STAR_DIM);
         }
-    }
 }

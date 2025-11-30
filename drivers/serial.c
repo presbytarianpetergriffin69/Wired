@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <serial.h>
+#include <stdarg.h>
+#include <system.h>
 #include <io.h>
 
 static bool initialized = false;

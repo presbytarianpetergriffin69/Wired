@@ -3,8 +3,10 @@
 # ==============
 
 KERNDIR = kernel
+MEMMDIR = kernel/mm
 DRIVDIR = drivers
-IDIR    = include/sys
+IDIRSYS = include/sys
+IDIRMEM = include/mm
 AMDDIR  = arch/amd64
 AMDCDIR = $(AMDDIR)/cpu
 AMDKDIR = $(AMDDIR)/klib

@@ -44,6 +44,8 @@ void kmain(void)
 
     console_init(fb);
 
+    starfield_init();
+
     kprintf("======================\n");
     kprintf("Welcome to WIRED OS\n");
     kprintf("======================\n");
@@ -53,8 +55,6 @@ void kmain(void)
     gdt_init();
     tss_init();
     idt_init();
-
-    serial_puts("serial test\n");
     
     acpi_init();
 
@@ -67,8 +67,6 @@ void kmain(void)
     hpet_init();
     lapic_init(lapic_base);
     lapic_timer_init(1000);
-
-    starfield_init();
 
     __asm__ volatile ("int3");
 
