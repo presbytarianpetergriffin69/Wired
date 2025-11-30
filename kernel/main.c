@@ -12,6 +12,8 @@
 #include <tss.h>
 #include <idt.h>
 #include <acpi.h>
+#include <hpet.h>
+#include <lapic.h>
 
 __attribute__((used, section(".limine_requests")))
 static volatile struct limine_framebuffer_request framebuffer_request = {
@@ -42,7 +44,11 @@ void kmain(void)
 
     console_init(fb);
 
-    console_print("Welcome to Wired OS\n");
+    kprintf("======================\n");
+    kprintf("Welcome to WIRED OS\n");
+    kprintf("======================\n");
+
+    kprintf("\n");
 
     gdt_init();
     tss_init();
@@ -51,6 +57,16 @@ void kmain(void)
     serial_puts("serial test\n");
     
     acpi_init();
+
+    acpi_selftest();
+
+    uint64_t lapic_base = acpi_get_lapic_base();
+    kprintf("[DEBUG] LAPIC base = 0x%016llx\n",
+            (unsigned long long)lapic_base);
+
+    hpet_init();
+    lapic_init(lapic_base);
+    lapic_timer_init(1000);
 
     starfield_init();
 

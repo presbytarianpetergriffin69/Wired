@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <system.h>
 #include <isr.h>
+#include <lapic.h>
 
 static const char *exception_names[32] =
 {
@@ -75,14 +76,17 @@ static void handle_page_fault(isr_regs_t *r)
 
 void isr_dispatch(isr_regs_t *r)
 {
-    if (r->int_no < 32) {
-        const char *name = exception_names[r->int_no];
+    uint32_t vec = r->int_no;
+
+    // --- CPU exceptions ---
+    if (vec < 32) {
+        const char *name = exception_names[vec];
 
         kprintf("\n=== CPU EXCEPTION %u: %s ===\n",
-                (unsigned)r->int_no, name);
-        kprintf("[EXC] error code %p\n", r->err_code);
+                (unsigned)vec, name);
+        kprintf("[EXC] error code %p\n", (void *)r->err_code);
 
-        if (r->int_no == 14) {
+        if (vec == 14) {
             handle_page_fault(r);
         } else {
             dump_common_frame(r);
@@ -92,6 +96,13 @@ void isr_dispatch(isr_regs_t *r)
         return;
     }
 
-    kprintf("[INT] Interrupt %u recieved\n",
-            (unsigned)r->int_no);
+    if (vec == LAPIC_TIMER_VECTOR) {
+
+        lapic_timer_tick();  
+        lapic_eoi();         
+        return;
+    }
+
+    kprintf("[INT] Interrupt %u received\n", (unsigned)vec);
+
 }

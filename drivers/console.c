@@ -87,10 +87,17 @@ void console_putc(char c)
     if (c == '\n') {
         cursor_x = 0;
         cursor_y += FONT_H;
+
+        // scroll if we moved past bottom
+        if (cursor_y + FONT_H > fb_height) {
+            scroll();
+            cursor_y -= FONT_H;
+        }
+
         return;
     }
 
-    uint8_t *glyph = font8x16[(uint8_t)c];
+    const uint8_t *glyph = font8x16[(uint8_t)c];
 
     for (int y = 0; y < FONT_H; y++) {
         uint8_t row = glyph[y];
@@ -116,6 +123,12 @@ void console_putc(char c)
     if (cursor_x + FONT_W >= fb_width) {
         cursor_x = 0;
         cursor_y += FONT_H;
+
+        // scroll if we moved past bottom
+        if (cursor_y + FONT_H > fb_height) {
+            scroll();
+            cursor_y -= FONT_H;
+        }
     }
 }
 

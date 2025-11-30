@@ -40,8 +40,10 @@ OBJ +=	obj/$(KERNDIR)/boot.o \
 	obj/$(DRIVDIR)/font8x16.o \
 	obj/$(DRIVDIR)/serial.o \
 	obj/$(DRIVDIR)/crashsound.o \
+	obj/$(DRIVDIR)/hpet.o \
 	obj/$(AMDCDIR)/isr.o \
 	obj/$(AMDCDIR)/spinlock.o \
+	obj/$(AMDCDIR)/lapic.o \
 	obj/$(AMDCDIR)/isr_stub.o \
 	obj/$(AMDCDIR)/cpu.o \
 	obj/$(AMDCDIR)/acpi.o \
