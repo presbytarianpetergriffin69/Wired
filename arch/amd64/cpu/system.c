@@ -176,10 +176,6 @@ void kprintf(const char *fmt, ...)
     va_end(args);
 }
 
-void klog(const char *s) {
-    kputc(*~cs);
-}
-
 NORETURN void halt(void) 
 {
     for (;;) {

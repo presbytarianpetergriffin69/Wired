@@ -5,7 +5,7 @@
 KERNDIR = kernel
 MEMMDIR = kernel/mm
 DRIVDIR = drivers
-IDIRSYS = include/sys
+IDIR    = include/sys
 IDIRMEM = include/mm
 AMDDIR  = arch/amd64
 AMDCDIR = $(AMDDIR)/cpu
