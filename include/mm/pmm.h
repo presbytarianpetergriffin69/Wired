@@ -33,7 +33,7 @@ paddr_t pmm_alloc_page(void);
 
 paddr_t pmm_alloc_pages(size_t count);
 
-paddr_t pmm_alloc_pages_flags(size_T count, uint32_t flags);
+paddr_t pmm_alloc_pages_flags(size_t count, uint32_t flags);
 
 void pmm_free_page(paddr_t paddr);
 

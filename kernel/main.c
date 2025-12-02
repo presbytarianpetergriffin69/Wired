@@ -47,7 +47,7 @@ void kmain(void)
     starfield_init();
 
     kprintf("======================\n");
-    kprintf("Welcome to WIRED OS\n");
+    kprintf("= Welcome to WIREDOS =\n");
     kprintf("======================\n");
 
     kprintf("\n");

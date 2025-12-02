@@ -4,9 +4,11 @@
 
 KERNDIR = kernel
 MEMMDIR = kernel/mm
+OBJMDIR = kernel/ob
 DRIVDIR = drivers
 IDIR    = include/sys
 IDIRMEM = include/mm
+IDIROBJ = include/ob
 AMDDIR  = arch/amd64
 AMDCDIR = $(AMDDIR)/cpu
 AMDKDIR = $(AMDDIR)/klib
