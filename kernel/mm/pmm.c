@@ -502,25 +502,25 @@ void page_init(void)
 
     kernel_hhdm_offset = hhdm_request.response->offset;
 
-    paddr_t pml4_phys;
-    page_table_t *pml4 = alloc_page_table(&pml4_phys);
+    paddr_t pml4_phys = paging_current_cr3();
+    page_table_t *pml4_virt = (page_table_t *)(pml4_phys + kernel_hhdm_offset);
 
     kernel_map.pml4_phys = pml4_phys;
-    kernel_map.pml4_virt = pml4;
+    kernel_map.pml4_virt = pml4_virt;
 
     uint64_t max_phys = pmm_total_memory();
 
-    for (uint64_t phys = 0; phys < max_phys; phys += PAGE_SIZE) {
+    // for (uint64_t phys = 0; phys < max_phys; phys += PAGE_SIZE) {
         // identity
-        paging_map_page(&kernel_map, (uintptr_t)phys, (paddr_t)phys, PTE_KERNEL_RW);
+    //    paging_map_page(&kernel_map, (uintptr_t)phys, (paddr_t)phys, PTE_KERNEL_RW);
         // hhdm
-        paging_map_page(&kernel_map,
-                        (uintptr_t)(phys + kernel_hhdm_offset),
-                        (paddr_t)phys,
-                        PTE_KERNEL_RW);
-    }
+    //    paging_map_page(&kernel_map,
+    //                    (uintptr_t)(phys + kernel_hhdm_offset),
+    //                    (paddr_t)phys,
+    //                    PTE_KERNEL_RW);
+    //}
 
-    paging_activate(&kernel_map);
+    //paging_activate(&kernel_map);
 }
 
 page_map_t *paging_get_kernel_map(void)
@@ -631,8 +631,54 @@ void paging_flush_tlb(void)
     __asm__ volatile ("mov %0, %%cr3" :: "r"(cr3) : "memory");
 }
 
+static const char *memmap_type_str(uint64_t type)
+{
+    switch (type) {
+        case LIMINE_MEMMAP_USABLE:                return "USABLE";
+        case LIMINE_MEMMAP_RESERVED:              return "RESERVED";
+        case LIMINE_MEMMAP_ACPI_RECLAIMABLE:      return "ACPI_RECLAIM";
+        case LIMINE_MEMMAP_ACPI_NVS:              return "ACPI_NVS";
+        case LIMINE_MEMMAP_BAD_MEMORY:            return "BAD";
+        case LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE:return "BOOTLOADER";
+        case LIMINE_MEMMAP_FRAMEBUFFER:           return "FRAMEBUFFER";
+        default:                                  return "UNKNOWN";
+    }
+} 
+
+void pmm_debug_dump(void)
+{
+    const struct limine_memmap_response *memmap = memmap_request.response;
+
+    if (!memmap) {
+        kprintf("[PMM] memmap_response is null\n");
+        return;
+    }
+
+    for (uint64_t i = 0; i < memmap->entry_count; ++i) {
+        const struct limine_memmap_entry *e = memmap->entries[i];
+        kprintf("[PMM] [%2llu] %s base=%016llx len=%016llx\n",
+                (unsigned long long)i,
+                memmap_type_str(e->type),
+                (unsigned long long)e->base,
+                (unsigned long long)e->length);
+    }
+
+    kprintf("[PMM] ===== stats =====\n");
+    kprintf("[PMM] total: %llu KiB\n", (unsigned long long)(pmm_total_memory() / 1024));
+    kprintf("[PMM] used : %llu KiB\n", (unsigned long long)(pmm_used_memory()  / 1024));
+    kprintf("[PMM] free : %llu KiB\n", (unsigned long long)(pmm_free_memory()  / 1024));
+    kprintf("[PMM] frames_total=%llu frames_used=%llu\n",
+            (unsigned long long)pmm_frames_total,
+            (unsigned long long)pmm_frames_used);
+
+    kprintf("[PMM] HHDM offset: %016llx\n\n",
+            (unsigned long long)kernel_hhdm_offset);
+}
+
 void mm_init(void)
 {
     pmm_init_limine();
     page_init();
+
+    pmm_debug_dump();
 }

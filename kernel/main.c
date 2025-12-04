@@ -72,6 +72,8 @@ void kmain(void)
 
     mm_init();
 
+    kprintf("mm works");
+
     __asm__ volatile ("int3");
 
     for (;;);
