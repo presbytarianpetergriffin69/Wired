@@ -92,7 +92,7 @@ struct MADTIOAPIC
     uint8_t reserved;
     uint32_t IoApicAddress;
     uint32_t GlobalSystemInterruptBase;
-} PACKED;
+};
 
 struct MADTISO
 {
@@ -102,7 +102,7 @@ struct MADTISO
     uint8_t IrqSource;
     uint32_t GlobalSystemInterrupt;
     uint16_t Flags;
-} PACKED;
+} ;
 
 struct MADTLapicNMI
 {
@@ -111,7 +111,7 @@ struct MADTLapicNMI
     uint8_t AcpiProcessorId;
     uint16_t Flags;
     uint8_t Lint;
-} PACKED;
+};
 
 struct MADTLapicAddrOverride
 {
@@ -119,7 +119,7 @@ struct MADTLapicAddrOverride
     uint8_t length;
     uint16_t reserved;
     uint64_t LocalApicAddress;
-} PACKED;
+};
 
 struct ACPIGenericAddress
 {
@@ -128,7 +128,7 @@ struct ACPIGenericAddress
     uint8_t RegisterBitOffset;
     uint8_t AccessSize;
     uint64_t Address;
-} PACKED;
+};
 
 struct HPET
 {
@@ -138,7 +138,7 @@ struct HPET
     uint8_t HPETNumber;
     uint16_t MinimumTick;
     uint8_t PageProtection;
-} PACKED;
+};
 
 struct acpi_cpu_info
 {

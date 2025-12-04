@@ -3,7 +3,7 @@
  * B Iohannes
  *  
  * 
- * 
+ * Copyright (c) 2025
  * 
  */
 
@@ -32,11 +32,11 @@ typedef uint64_t pte_t;
 enum {
     PTE_PRESENT         = 1ULL << 0,
     PTE_WRITABLE        = 1ULL << 1,
-    PTE_USER            = 1ULL << 2;
-    PTE_PWT             = 1ULL << 3;
-    PTE_PCD             = 1ULL << 4;
+    PTE_USER            = 1ULL << 2,
+    PTE_PWT             = 1ULL << 3,
+    PTE_PCD             = 1ULL << 4,
     PTE_ACCESSED        = 1ULL << 5,
-    PTE_DIRTY           = 1ULL << 6;
+    PTE_DIRTY           = 1ULL << 6,
     PTE_HUGE            = 1ULL << 7,
     PTE_GLOBAL          = 1ULL << 8,
     PTE_NX              = 1ULL << 63
@@ -56,8 +56,8 @@ typedef struct page_table
 
 typedef struct page_map
 {
-    paddr_t pm14_phys;
-    page_table_t *pm14_virt;
+    paddr_t pml4_phys;
+    page_table_t *pml4_virt;
 } page_map_t;
 
 // initialize functions

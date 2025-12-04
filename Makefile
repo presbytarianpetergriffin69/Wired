@@ -24,7 +24,9 @@ LDFLAGS += \
 	-nostdlib \
 	-static \
 	-T linker.ld
-IFLAGS  += -I$(IDIR)
+IFLAGS  += -I$(IDIR) \
+		-I$(IDIRMEM) \
+		-I$(IDIROBJ)
 CFLAGS  += \
 	-std=gnu99 \
 	-ffreestanding \
@@ -46,6 +48,7 @@ OBJ +=	obj/$(KERNDIR)/boot.o \
 	obj/$(DRIVDIR)/crashsound.o \
 	obj/$(DRIVDIR)/hpet.o \
 	obj/$(AMDCDIR)/isr.o \
+	obj/$(MEMMDIR)/pmm.o \
 	obj/$(AMDCDIR)/spinlock.o \
 	obj/$(AMDCDIR)/lapic.o \
 	obj/$(AMDCDIR)/isr_stub.o \
@@ -62,6 +65,10 @@ OBJ +=	obj/$(KERNDIR)/boot.o \
 	obj/$(KERNDIR)/main.o
 
 all: bin/wiredos
+
+obj/mm/%.o: $(MEMMDIR)/%.s
+	mkdir -p $(@D)
+	$(CC) -c $< -o $@
 
 obj/kernel/%.o: $(KERNDIR)/%.s
 	mkdir -p $(@D)
