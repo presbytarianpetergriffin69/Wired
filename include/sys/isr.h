@@ -10,4 +10,8 @@ typedef struct isr_regs
     uint64_t rip, cs, rflags, rsp, ss;
 } isr_regs_t;
 
+typedef void (*irq_handler_t)(isr_regs_t *r, void *ctx);
+
 void isr_dispatch(isr_regs_t *r);
+void irq_register(uint8_t vec, irq_handler_t handler, void *ctx);
+void irq_unregister(uint8_t vec);
