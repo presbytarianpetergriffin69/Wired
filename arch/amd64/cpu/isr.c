@@ -3,6 +3,14 @@
 #include <isr.h>
 #include <lapic.h>
 
+typedef struct
+{
+    irq_handler_t handler;
+    void            *ctx;
+} irq_entry_t;
+
+static irq_entry_t irq_table[256]; // 0 - 255
+
 static const char *exception_names[32] =
 {
     "Division Error",
@@ -74,6 +82,18 @@ static void handle_page_fault(isr_regs_t *r)
     panic("Page fault");
 }
 
+void irq_register(uint8_t vec, irq_handler_t handler, void *ctx)
+{
+    irq_table[vec].handler = handler;
+    irq_table[vec].ctx     = ctx;
+}
+
+void irq_unregister(uint8_t vec)
+{
+    irq_table[vec].handler = NULL;
+    irq_table[vec].ctx     = NULL;
+}
+
 void isr_dispatch(isr_regs_t *r)
 {
     uint32_t vec = r->int_no;
@@ -103,6 +123,16 @@ void isr_dispatch(isr_regs_t *r)
         return;
     }
 
-    kprintf("[INT] Interrupt %u received\n", (unsigned)vec);
+    irq_entry_t *entry = &irq_table[vec];
+
+    if (entry->handler) {
+        entry->handler(r, entry->ctx);
+    } else {
+        panic("Unhandled IRQ vector %u\n");
+    }
+
+    kprintf("[INT] Interrupt %u received\n");
+
+    lapic_eoi();
 
 }
