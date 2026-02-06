@@ -19,8 +19,6 @@
 #define PMM_PAGE_SIZE 0x1000UL
 #endif
 
-typedef uint64_t paddr_t;
-
 enum
 {
     PMM_ALLOC_NONE = 0x0,

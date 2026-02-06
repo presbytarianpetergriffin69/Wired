@@ -13,6 +13,7 @@
 #include <stddef.h>
 #include <pmm.h>
 #include <system.h>
+#include <types.h>
 
 #define PAGE_SIZE       PMM_PAGE_SIZE
 #define PAGE_SHIFT      12
